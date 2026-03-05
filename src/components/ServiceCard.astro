@@ -6,6 +6,7 @@ interface Props {
   features: string[];
   ctaLabel?: string;
   ctaHref?: string;
+  calLink?: string;   // Cal.com link — opens popup modal instead of navigating
   accent?: 'blue' | 'pink' | 'peach';
 }
 
@@ -16,8 +17,11 @@ const {
   features,
   ctaLabel = 'Learn More',
   ctaHref = '#booking',
+  calLink,
   accent = 'blue',
 } = Astro.props;
+
+const isExternal = ctaHref.startsWith('http');
 
 const accentBg = {
   blue: 'bg-wave-blue-light',
@@ -64,10 +68,22 @@ const accentText = {
   </ul>
 
   <!-- CTA -->
-  <a
-    href={ctaHref}
-    class={`mt-auto inline-block text-center font-semibold px-5 py-2.5 rounded-lg text-sm transition-all duration-200 border-2 ${accentText[accent]} border-current hover:bg-wave-blue hover:text-white hover:border-wave-blue`}
-  >
-    {ctaLabel}
-  </a>
+  {calLink ? (
+    <button
+      data-cal-link={calLink}
+      data-cal-config='{"layout":"month_view"}'
+      class={`mt-auto w-full cursor-pointer text-center font-semibold px-5 py-2.5 rounded-lg text-sm transition-all duration-200 border-2 ${accentText[accent]} border-current hover:bg-wave-blue hover:text-white hover:border-wave-blue`}
+    >
+      {ctaLabel}
+    </button>
+  ) : (
+    <a
+      href={ctaHref}
+      target={isExternal ? '_blank' : undefined}
+      rel={isExternal ? 'noopener noreferrer' : undefined}
+      class={`mt-auto inline-block text-center font-semibold px-5 py-2.5 rounded-lg text-sm transition-all duration-200 border-2 ${accentText[accent]} border-current hover:bg-wave-blue hover:text-white hover:border-wave-blue`}
+    >
+      {ctaLabel}
+    </a>
+  )}
 </div>
